@@ -76,8 +76,10 @@ thousandsSep_format: null
 remove_sections: []
 section_comments: {}
 lint: False
+custom_plot_config: {}
 
 ignore_symlinks: false
+ignore_images: true
 fn_ignore_dirs:
     - 'multiqc_data'
     - 'icarus_viewers'       # quast
@@ -129,6 +131,9 @@ fn_clean_exts:
     - '.spp'
     - '.fa'
     - '.fasta'
+    - '.png'
+    - '.jpg'
+    - '.jpeg'
     - 'Log.final'
     - 'ReadsPerGene'
     - '.flagstat'
@@ -180,6 +185,8 @@ fn_clean_exts:
     - '.qhist'
     - '.rpkm'
     - '.selfSM'
+    - '.extendedFrags'
+    - '_SummaryStatistics'
 
 # These are removed after the above, only if sample names
 # start or end with this string. Again, removed in order.
@@ -205,6 +212,7 @@ fn_clean_trim:
     - '.h5'
     - '_matrix'
     - '.stats'
+    - '.hist'
 
 # Files to ignore when indexing files.
 # Grep file match patterns.
@@ -224,6 +232,7 @@ fn_ignore_files:
     - '*.txt.gz'
     - '*.pdf'
     - '*.html'
+    - '*.md5'
 
 # Favourite modules that should appear at the top in preference
 # This is in addition to those below. These appear above _all_ other
@@ -337,7 +346,24 @@ module_order:
         module_tag:
             - DNA
             - RNA
+    - fgbio:
+        module_tag:
+            - DNA
+            - RNA
+            - umi
     - dedup:
+        module_tag:
+            - DNA
+            - ancient
+    - damageprofiler:
+        module_tag:
+            - DNA
+            - ancient
+    - biobambam2:
+        module_tag:
+            - DNA
+            - RNA
+    - mtnucratio:
         module_tag:
             - DNA
             - ancient
@@ -357,6 +383,9 @@ module_order:
         module_tag:
             - DNA
             - RNA
+    - sexdeterrmine:
+        module_tag:
+            - DNA
     - bamtools:
         module_tag:
             - DNA
@@ -371,6 +400,9 @@ module_order:
         module_tag:
             - DNA
             - WGS
+    - stacks:
+        module_tag:
+            - DNA
 
     # Alignment tool stats
     - bbmap:
@@ -378,6 +410,10 @@ module_order:
             - DNA
             - RNA
     - bismark:
+        module_tag:
+            - DNA
+            - methylation
+    - biscuit:
         module_tag:
             - DNA
             - methylation
@@ -414,6 +450,12 @@ module_order:
     - bowtie1:
         module_tag:
             - RNA
+    - snpsplit:
+        module_tag:
+            - DNA
+            - RNA
+            - methylation
+            - allele-specific
 
     # Pre-alignment QC
     - kat:
@@ -471,6 +513,18 @@ module_order:
         module_tag:
             - RNA
             - DNA
+    - minionqc:
+        module_tag:
+            - DNA
+            - RNA
+    - mosdepth:
+        module_tag:
+            - DNA
+            - RNA
+    - multivcfanalyzer:
+        module_tag:
+            - DNA
+            - ancient
     - clusterflow:
         module_tag:
             - RNA
@@ -486,3 +540,12 @@ module_order:
             - RNA
             - DNA
             - methylation
+    - flash:
+        module_tag:
+            - DNA
+            - RNA
+
+    - seqyclean:
+        module_tag:
+            - DNA
+            - RNA

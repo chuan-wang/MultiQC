@@ -8,7 +8,8 @@
 [![PyPI Version](https://img.shields.io/pypi/v/multiqc.svg?style=flat-square)](https://pypi.python.org/pypi/multiqc/)
 [![Conda Version](https://anaconda.org/bioconda/multiqc/badges/version.svg)](https://anaconda.org/bioconda/multiqc)
 [![Docker](https://img.shields.io/docker/automated/ewels/multiqc.svg?style=flat-square)](https://hub.docker.com/r/ewels/multiqc/)
-[![Build Status](https://img.shields.io/travis/ewels/MultiQC.svg?style=flat-square)](https://travis-ci.org/ewels/MultiQC)
+[![GitHub Workflow Status - Linux](https://img.shields.io/github/workflow/status/ewels/MultiQC/MultiQC%20-%20Linux?label=build%20-%20Linux&logo=ubuntu&logoColor=white&style=flat-square)](https://github.com/ewels/MultiQC/actions?query=workflow%3A%22MultiQC+-+Linux%22)
+[![GitHub Workflow Status - Windows](https://img.shields.io/github/workflow/status/ewels/MultiQC/MultiQC%20-%20Windows?label=build%20-%20Windows&logo=windows&style=flat-square)](https://github.com/ewels/MultiQC/actions?query=workflow%3A%22MultiQC+-+Windows%22)
 
 [![Gitter](https://img.shields.io/badge/gitter-%20join%20chat%20%E2%86%92-4fb99a.svg?style=flat-square)](https://gitter.im/ewels/MultiQC)
 [![DOI](https://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtw354-lightgrey.svg?style=flat-square)](http://dx.doi.org/10.1093/bioinformatics/btw354)
@@ -18,7 +19,7 @@
 MultiQC is a tool to create a single report with interactive plots
 for multiple bioinformatics analyses across many samples.
 
-MultiQC is written in Python (tested with v2.7, 3.4, 3.5 and 3.6). It is
+MultiQC is written in Python (tested with v3.6+). It is
 available on the [Python Package Index](https://pypi.python.org/pypi/multiqc/)
 and through conda using [Bioconda](http://bioconda.github.io/).
 
@@ -28,39 +29,14 @@ for all logs found. MultiQC reports can describe multiple analysis steps and
 large numbers of samples within a single plot, and multiple analysis tools making
 it ideal for routine fast quality control.
 
-Currently, supported tools include:
-
-
-|Read QC & pre-processing         | Aligners / quantifiers  | Post-alignment processing | Post-alignment QC          |
-|---------------------------------|-------------------------|---------------------------|----------------------------|
-|[Adapter Removal][adapterremoval]|[BBMap][bbmap]           |[Bamtools][bamtools]       |[BUSCO][busco]              |
-|[AfterQC][afterqc]               |[Bismark][bismark]       |[Bcftools][bcftools]       |[Conpair][conpair]          |
-|[Bcl2fastq][bcl2fastq]           |[Bowtie][bowtie-1]       |[GATK][gatk]               |[deepTools][deeptools]      |
-|[BBTools][bbmap]                 |[Bowtie 2][bowtie-2]     |[HOMER][homer]             |[Disambiguate][disambiguate]|
-|[BioBloom Tools][biobloomtools]  |[HiCPro][hicpro]         |[HTSeq][htseq]             |[goleft][goleft]            |
-|[Cluster Flow][clusterflow]      |[HiCUP][hicup]           |[MACS2][macs2]             |[HiCExplorer][hicexplorer]  |
-|[Cutadapt][cutadapt]             |[HISAT2][hisat2]         |[Picard][picard]           |[methylQA][methylqa]        |
-|[FastQC][fastqc]                 |[Kallisto][kallisto]     |[Prokka][prokka]           |[miRTrace][mirtrace]        |
-|[FastQ Screen][fastq-screen]     |[Long Ranger][longranger]|[RSEM][rsem]               |[Peddy][peddy]              |
-|[Fastp][fastp]                   |[Salmon][salmon]         |[Samblaster][samblaster]   |[Preseq][preseq]            |
-|[Flexbar][flexbar]               |[Slamdunk][slamdunk]     |[Samtools][samtools]       |[phantompeakqualtools][phantompeakqualtools]|
-|[InterOp][interop]               |[STAR][star]             |[SnpEff][snpeff]           |[QoRTs][qorts]              |
-|[Jellyfish][jellyfish]           |[Tophat][tophat]         |[Subread featureCounts][featurecounts]|[Qualimap][qualimap]|
-|[KAT][kat]                       |                         |[THetA2][theta2]           |[QUAST][quast]              |
-|[leeHom][leehom]                 |                         |                           |[RNA-SeQC][rna_seqc]        |
-|[Skewer][skewer]                 |                         |                           |[RSeQC][rseqc]              |
-|[SortMeRNA][sortmerna]           |                         |                           |[Sargasso][sargasso]        |
-|[Trimmomatic][trimmomatic]       |                         |                           |[Supernova][supernova]      |
-|                                 |                         |                           |[VCFTools][vcftools]        |
-|                                 |                         |                           |[VerifyBAMID][verifybamid]  |
-
+There a very large number of Bioinformatics tools supported by MultiQC.
+Please see the MultiQC website for a [complete list](https://multiqc.info/#supported-tools).
 
 MultiQC can also easily parse data from custom scripts, if correctly formatted / configured.
 See the [MultiQC documentation](http://multiqc.info/docs/#custom-content) for more information.
 
-Please note that some modules only recognise output from certain tool subcommands. Please follow the
-links in the above table to the [module documentation](http://multiqc.info/docs/#multiqc-modules)
-for more information.
+Please note that some modules only recognise output from certain tool subcommands.
+Please see the [module documentation](http://multiqc.info/docs/#multiqc-modules) for more information.
 
 More modules are being written all of the time. Please suggest any ideas as a new
 [issue](https://github.com/ewels/MultiQC/issues) _(include an example log file if possible)_.
@@ -105,6 +81,14 @@ or `json` instead).
 For more detailed instructions, run `multiqc -h` or see the
 [documentation](http://multiqc.info/docs/#running-multiqc).
 
+## Development
+
+MultiQC has been written in a way to make extension and customisation as easy as possible.
+The documentation has a large section describing how to [code with MultiQC](https://multiqc.info/docs/#coding-with-multiqc) and you can find an example plugin at [https://github.com/MultiQC/example-plugin](https://github.com/MultiQC/example-plugin).
+
+Pull-requests for fixes and additions are very welcome.
+Please see the [contributing notes](https://github.com/ewels/MultiQC/blob/master/.github/CONTRIBUTING.md) for more information about how the process works.
+
 ## Citation
 Please consider citing MultiQC if you use it in your analysis.
 
@@ -114,18 +98,18 @@ Please consider citing MultiQC if you use it in your analysis.
 > doi: [10.1093/bioinformatics/btw354](http://dx.doi.org/10.1093/bioinformatics/btw354) <br/>
 > PMID: [27312411](http://www.ncbi.nlm.nih.gov/pubmed/27312411)
 
-```TeX
+```BibTeX
 @article{doi:10.1093/bioinformatics/btw354,
-author = {Ewels, Philip and Magnusson, Måns and Lundin, Sverker and Käller, Max},
-title = {MultiQC: summarize analysis results for multiple tools and samples in a single report},
-journal = {Bioinformatics},
-volume = {32},
-number = {19},
-pages = {3047},
-year = {2016},
-doi = {10.1093/bioinformatics/btw354},
-URL = { + http://dx.doi.org/10.1093/bioinformatics/btw354},
-eprint = {/oup/backfile/Content_public/Journal/bioinformatics/32/19/10.1093_bioinformatics_btw354/3/btw354.pdf}
+ author = {Ewels, Philip and Magnusson, Måns and Lundin, Sverker and Käller, Max},
+ title = {MultiQC: summarize analysis results for multiple tools and samples in a single report},
+ journal = {Bioinformatics},
+ volume = {32},
+ number = {19},
+ pages = {3047},
+ year = {2016},
+ doi = {10.1093/bioinformatics/btw354},
+ URL = { + http://dx.doi.org/10.1093/bioinformatics/btw354},
+ eprint = {/oup/backfile/Content_public/Journal/bioinformatics/32/19/10.1093_bioinformatics_btw354/3/btw354.pdf}
 }
 ```
 
@@ -157,6 +141,7 @@ Code contributions from:
 [@chuan-wang](https://github.com/chuan-wang),
 [@cpavanrun](https://github.com/cpavanrun),
 [@dakl](https://github.com/dakl),
+[@elizabethcook21](https://github.com/elizabethcook21),
 [@ehsueh](https://github.com/ehsueh),
 [@epruesse](https://github.com/epruesse),
 [@florianduclot](https://github.com/florianduclot/),
@@ -177,76 +162,14 @@ Code contributions from:
 [@robinandeer](https://github.com/robinandeer),
 [@Rotholandus](https://github.com/Rotholandus),
 [@sachalau](https://github.com/sachalau/),
+[@smeds](https://github.com/smeds/),
 [@t-neumann](https://github.com/t-neumann),
 [@vladsaveliev](https://github.com/vladsaveliev),
 [@winni2k](https://github.com/winni2k),
 [@wkretzsch](https://github.com/wkretzsch),
 [@nservant](https://github.com/nservant),
+[@m-ish](https://github.com/m-ish)
 
 and many others. Thanks for your support!
 
 MultiQC is released under the GPL v3 or later licence.
-
-[adapterremoval]: http://multiqc.info/docs/#adapter-removal
-[afterqc]:        http://multiqc.info/docs/#afterqc
-[bamtools]:       http://multiqc.info/docs/#bamtools
-[bbmap]:          http://multiqc.info/docs/#bbmap
-[bcftools]:       http://multiqc.info/docs/#bcftools
-[bcl2fastq]:      http://multiqc.info/docs/#bcl2fastq
-[biobloomtools]:  http://multiqc.info/docs/#biobloom-tools
-[bismark]:        http://multiqc.info/docs/#bismark
-[bowtie-1]:       http://multiqc.info/docs/#bowtie-1
-[bowtie-2]:       http://multiqc.info/docs/#bowtie-2
-[busco]:          http://multiqc.info/docs/#busco
-[clusterflow]:    http://multiqc.info/docs/#cluster-flow
-[conpair]:        http://multiqc.info/docs/#conpair
-[cutadapt]:       http://multiqc.info/docs/#cutadapt
-[deeptools]:      http://multiqc.info/docs/#deeptools
-[disambiguate]:   http://multiqc.info/docs/#disambiguate
-[fastq-screen]:   http://multiqc.info/docs/#fastq-screen
-[fastqc]:         http://multiqc.info/docs/#fastqc
-[fastp]:          http://multiqc.info/docs/#fastp
-[featurecounts]:  http://multiqc.info/docs/#featurecounts
-[flexbar]:        http://multiqc.info/docs/#flexbar
-[gatk]:           http://multiqc.info/docs/#gatk
-[goleft]:         http://multiqc.info/docs/#goleft-indexcov
-[hicexplorer]:    http://multiqc.info/docs/#hicexplorer
-[hicup]:          http://multiqc.info/docs/#hicup
-[hisat2]:         http://multiqc.info/docs/#hisat2
-[homer]:          http://multiqc.info/docs/#homer
-[htseq]:          http://multiqc.info/docs/#htseq
-[interop]:        http://multiqc.info/docs/#interop
-[jellyfish]:      http://multiqc.info/docs/#jellyfish
-[kallisto]:       http://multiqc.info/docs/#kallisto
-[kat]:            http://multiqc.info/docs/#kat
-[leehom]:         http://multiqc.info/docs/#leehom
-[longranger]:     http://multiqc.info/docs/#longranger
-[macs2]:          http://multiqc.info/docs/#macs2
-[methylqa]:       http://multiqc.info/docs/#methylqa
-[mirtrace]:       http://multiqc.info/docs/#mirtrace
-[peddy]:          http://multiqc.info/docs/#peddy
-[phantompeakqualtools]: http://multiqc.info/docs/#phantompeakqualtools
-[picard]:         http://multiqc.info/docs/#picard
-[preseq]:         http://multiqc.info/docs/#preseq
-[prokka]:         http://multiqc.info/docs/#prokka
-[qorts]:          http://multiqc.info/docs/#qorts
-[qualimap]:       http://multiqc.info/docs/#qualimap
-[quast]:          http://multiqc.info/docs/#quast
-[rna_seqc]:       http://multiqc.info/docs/#rna_seqc
-[rsem]:           http://multiqc.info/docs/#rsem
-[rseqc]:          http://multiqc.info/docs/#rseqc
-[salmon]:         http://multiqc.info/docs/#salmon
-[samblaster]:     http://multiqc.info/docs/#samblaster
-[samtools]:       http://multiqc.info/docs/#samtools
-[sargasso]:       http://multiqc.info/docs/#sargasso
-[skewer]:         http://multiqc.info/docs/#skewer
-[slamdunk]:       http://multiqc.info/docs/#slamdunk
-[snpeff]:         http://multiqc.info/docs/#snpeff
-[sortmerna]:      http://multiqc.info/docs/#sortmerna
-[star]:           http://multiqc.info/docs/#star
-[supernova]:      http://multiqc.info/docs/#supernova
-[theta2]:         http://multiqc.info/docs/#theta2
-[tophat]:         http://multiqc.info/docs/#tophat
-[trimmomatic]:    http://multiqc.info/docs/#trimmomatic
-[vcftools]:       http://multiqc.info/docs/#vcftools
-[verifyBAMID]:    http://multiqc.info/docs/#verifybamid

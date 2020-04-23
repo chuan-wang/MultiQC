@@ -45,14 +45,14 @@ class FlagstatReportMixin():
                 'shared_key': 'read_count',
                 'placement' : 100.0
             }
-            self.general_stats_addcols(self.samtools_flagstat, flagstats_headers, 'Samtools Flagstat')
+            self.general_stats_addcols(self.samtools_flagstat, flagstats_headers)
 
             # Make dot plot of counts
             keys = OrderedDict()
             reads = {
                 'min': 0,
-                'modify': lambda x: float(x) / 1000000.0,
-                'suffix': 'M reads',
+                'modify': lambda x: float(x) * config.read_count_multiplier,
+                 'suffix': '{} reads'.format(config.read_count_prefix),
                 'decimalPlaces': 2,
                 'shared_key': 'read_count'
             }

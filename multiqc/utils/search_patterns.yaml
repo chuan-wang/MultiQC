@@ -12,7 +12,7 @@ afterqc:
 bamtools/stats:
     contents: 'Stats for BAM file(s):'
     shared: true
-    num_lines: 2
+    num_lines: 10
 bbmap/stats:
     contents: '#Name	Reads	ReadsPct'
     num_lines: 4
@@ -80,9 +80,78 @@ bcl2fastq:
     - fn: 'Stats.json'
       contents: 'DemuxResults'
     - num_lines: 300
+biobambam2/bamsormadup:
+    contents: '# bamsormadup'
+    num_lines: 2
 biobloomtools:
     contents: 'filter_id	hits	misses	shared	rate_hit	rate_miss	rate_shared'
     num_lines: 2
+biscuit/align_mapq:
+    fn: '*_mapq_table.txt'
+    contents: 'BISCUITqc Mapping Quality Table'
+biscuit/align_strand:
+    fn: '*_strand_table.txt'
+    contents: 'BISCUITqc Strand Table'
+biscuit/align_isize:
+    fn: '*_isize_score_table.txt'
+    contents: 'BISCUITqc Insert Size, Score Table'
+biscuit/covdist_cpg:
+    fn: '*_covdist_cpg_table.txt'
+    contents: 'BISCUITqc CpG Depth Distribution (All)'
+biscuit/covdist_cpg_q40:
+    fn: '*_covdist_cpg_q40_table.txt'
+    contents: 'BISCUITqc CpG Depth Distribution (Q40)'
+biscuit/covdist_cpg_q40_botgc:
+    fn: '*_covdist_cpg_q40_botgc_table.txt'
+    contents: 'BISCUITqc CpG Depth Distribution (low GC, Q40)'
+biscuit/covdist_cpg_q40_topgc:
+    fn: '*_covdist_cpg_q40_topgc_table.txt'
+    contents: 'BISCUITqc CpG Depth Distribution (high GC, Q40)'
+biscuit/covdist:
+    fn: '*_covdist_table.txt'
+    contents: 'BISCUITqc Depth Distribution (All)'
+biscuit/covdist_q40:
+    fn: '*_covdist_q40_table.txt'
+    contents: 'BISCUITqc Depth Distribution (Q40)'
+biscuit/covdist_q40_botgc:
+    fn: '*_covdist_q40_botgc_table.txt'
+    contents: 'BISCUITqc Depth Distribution (low GC, Q40)'
+biscuit/covdist_q40_topgc:
+    fn: '*_covdist_q40_topgc_table.txt'
+    contents: 'BISCUITqc Depth Distribution (high GC, Q40)'
+biscuit/qc_cv:
+    fn: '*_all_cv_table.txt'
+    contents: 'BISCUITqc Uniformity Table'
+biscuit/qc_cpg_cv:
+    fn: '*_cpg_cv_table.txt'
+    contents: 'BISCUITqc CpG Uniformity Table'
+biscuit/qc_cpg_dist:
+    fn: '*_cpg_dist_table.txt'
+    contents: 'BISCUITqc CpG Distribution Table'
+biscuit/dup_report:
+    fn: '*_dup_report.txt'
+    contents: 'BISCUITqc Read Duplication Table'
+biscuit/markdup_report:
+    fn: '*_markdup_report.txt'
+    contents: '[mark_dup] parsed'
+biscuit/retention_cph_readpos:
+    fn: '*_CpHRetentionByReadPos.txt'
+    contents: 'BISCUITqc CpH Retention by Read Position Table'
+biscuit/retention_cpg_readpos:
+    fn: '*_CpGRetentionByReadPos.txt'
+    contents: 'BISCUITqc CpG Retention by Read Position Table'
+biscuit/retention_dist:
+    fn: '*_CpGRetentionDist.txt'
+    contents: 'BISCUITqc Retention Distribution Table'
+biscuit/retention_dist_byread:
+    fn: '*_freqOfTotalRetentionPerRead.txt'
+    contents: 'BISCUITqc Frequency of Total Retention per Read Table'
+biscuit/retention_rate_bybase:
+    fn: '*_totalBaseConversionRate.txt'
+    contents: 'BISCUITqc Conversion Rate by Base Average Table'
+biscuit/retention_rate_byread:
+    fn: '*_totalReadConversionRate.txt'
+    contents: 'BISCUITqc Conversion Rate by Read Average Table'
 bismark/align:
     fn: '*_[SP]E_report.txt'
 bismark/dedup:
@@ -113,11 +182,11 @@ bowtie2:
         - 'HiC-Pro'
     shared: true
 busco:
-    fn: 'short_summary_*'
+    fn: 'short_summary*'
     contents: 'BUSCO version is:'
     num_lines: 1
 custom_content:
-    fn_re: '.+_mqc\.(yaml|yml|json|txt|csv|tsv|log|out)'
+    fn_re: '.+_mqc\.(yaml|yml|json|txt|csv|tsv|log|out|png|jpg|jpeg)'
 clipandmerge:
     contents: 'ClipAndMerge ('
     num_lines: 5
@@ -138,8 +207,10 @@ cutadapt:
     contents: 'This is cutadapt'
     # contents: 'cutadapt version' # Use this instead if using very old versions of cutadapt (eg. v1.2)
     shared: true
+damageprofiler:
+    fn: '*dmgprof.json'
 dedup:
-    fn: 'dedup.log'
+    fn: '*dedup.json'
 deeptools/bamPEFragmentSizeTable:
     contents: '	Frag. Sampled	Frag. Len. Min.	Frag. Len. 1st. Qu.	Frag. Len. Mean	Frag. Len. Median	Frag. Len. 3rd Qu.'
     num_lines: 1
@@ -186,6 +257,14 @@ fastqc/theoretical_gc:
 featurecounts:
     fn: '*.summary'
     shared: true
+fgbio/groupreadsbyumi:
+    contents: 'fraction_gt_or_eq_family_size'
+    num_lines: 1
+flash/log:
+    contents: '[FLASH]'
+    shared: true
+flash/hist:
+    fn: '*flash*.hist'
 flexbar:
     contents: 'Flexbar - flexible barcode and adapter removal'
     shared: true
@@ -207,7 +286,7 @@ htseq:
 hicexplorer:
     contents: 'Min rest. site distance'
     max_filesize: 4096
-    num_lines: 5
+    num_lines: 26
 hicup:
     fn: 'HiCUP_summary_report*'
 hicpro/mmapstat:
@@ -265,6 +344,9 @@ macs2:
 methylQA:
     fn: '*.report'
     shared: true
+minionqc:
+    fn: 'summary.yaml'
+    contents: 'total.gigabases'
 mirtrace/summary:
     fn: 'mirtrace-results.json'
 mirtrace/length:
@@ -273,6 +355,14 @@ mirtrace/contaminationbasic:
     fn: 'mirtrace-stats-contamination_basic.tsv'
 mirtrace/mirnacomplexity:
     fn: 'mirtrace-stats-mirna-complexity.tsv'
+mtnucratio:
+    fn: '*mtnuc.json'
+mosdepth/global_dist:
+    fn: '*.mosdepth.global.dist.txt'
+mosdepth/region_dist:
+    fn: '*.mosdepth.region.dist.txt'
+multivcfanalyzer:
+    fn: 'MultiVCFAnalyzer.json'
 disambiguate:
     contents: 'unique species A pairs'
     num_lines: 2
@@ -320,6 +410,10 @@ picard/rrbs_metrics:
     shared: true
 picard/sam_file_validation:
     fn: '*[Vv]alidate[Ss]am[Ff]ile*'
+picard/variant_calling_metrics:
+    fn: '*.variant_calling_detail_metrics'
+    contents: 'CollectVariantCallingMetrics'
+    shared: true
 picard/wgs_metrics:
     contents: 'CollectWgsMetrics'
     shared: true
@@ -353,8 +447,13 @@ qualimap/rnaseq/coverage:
 quast:
     fn: 'report.tsv'
     shared: true
-rna_seqc/metrics:
-    fn: 'metrics.tsv'
+rna_seqc/metrics_v1:
+    fn: '*metrics.tsv'
+    contents: 'Sample	Note	'
+    shared: true
+rna_seqc/metrics_v2:
+    fn: '*metrics.tsv'
+    contents: 'High Quality Ambiguous Alignment Rate'
     shared: true
 rna_seqc/coverage:
     fn_re: 'meanCoverageNorm_(high|medium|low)\.txt'
@@ -406,6 +505,10 @@ samtools/rmdup:
     shared: true
 sargasso:
     fn: 'overall_filtering_summary.txt'
+seqyclean:
+    fn: '*_SummaryStatistics.tsv'
+sexdeterrmine:
+    fn: 'sexdeterrmine.json'
 skewer:
     contents: 'maximum error ratio allowed (-r):'
     shared: true
@@ -429,10 +532,25 @@ slamdunk/tcperutrpos:
     num_lines: 1
 snpeff:
     contents: 'SnpEff_version'
-    max_filesize: 1000000
+    max_filesize: 5000000
+snpsplit/old:
+    contents: 'Writing allele-flagged output file to:'
+    num_lines: 2
+snpsplit/new:
+    fn: '*SNPsplit_report.yaml'
 sortmerna:
     contents: 'Minimal SW score based on E-value'
     shared: true
+stacks/gstacks:
+    fn: 'gstacks.log.distribs'
+    contents: 'BEGIN effective_coverages_per_sample'
+stacks/populations:
+    fn: 'populations.log.distribs'
+    contents: 'BEGIN missing_samples_per_loc_prefilters'
+stacks/sumstats:
+    fn: '*.sumstats_summary.tsv'
+    contents: '# Pop ID	Private	Num_Indv	Var	StdErr	P	Var'
+    max_filesize: 1000000
 star:
     fn: '*Log.final.out'
 star/genecounts:

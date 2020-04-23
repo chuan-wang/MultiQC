@@ -216,6 +216,8 @@ class MultiqcModule(BaseMultiqcModule):
             total_reads = 0
             for v in parsed_json['duplication']['histogram']:
                 total_reads += v
+            if total_reads == 0:
+                raise KeyError
             # Calculate percentages
             for i, v in enumerate(parsed_json['duplication']['histogram']):
                 self.fastp_duplication_plotdata[s_name][i+1] = (float(v) / float(total_reads)) * 100.0
@@ -231,6 +233,8 @@ class MultiqcModule(BaseMultiqcModule):
                 total_reads += v
                 if float(v) > 0:
                     max_i = i
+            if total_reads == 0:
+                raise KeyError
             # Calculate percentages
             for i, v in enumerate(parsed_json['insert_size']['histogram']):
                 if i <= max_i:
@@ -282,12 +286,13 @@ class MultiqcModule(BaseMultiqcModule):
             'scale': 'RdYlGn-rev'
         }
         headers['after_filtering_q30_rate'] = {
-            'title': '{} Q30 reads'.format(config.read_count_prefix),
-            'description': 'Reads > Q30 after filtering ({})'.format(config.read_count_desc),
+            'title': '% > Q30',
+            'description': 'Percentage of reads > Q30 after filtering',
             'min': 0,
-            'modify': lambda x: x * config.read_count_multiplier,
+            'max': 100,
+            'modify': lambda x: x * 100.0,
             'scale': 'GnBu',
-            'shared_key': 'read_count',
+            'suffix': '%',
             'hidden': True
         }
         headers['after_filtering_q30_bases'] = {

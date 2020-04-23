@@ -22,6 +22,7 @@ try:
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
+    logger.debug("Using matplotlib version {}".format(matplotlib.__version__))
 except Exception as e:
     # MatPlotLib can break in a variety of ways. Fake an error message and continue without it if so.
     # The lack of the library will be handled when plots are attempted
@@ -40,7 +41,7 @@ def get_template_mod():
         _template_mod = config.avail_templates[config.template].load()
     return _template_mod
 
-def plot (data, cats=None, pconfig=None):
+def plot (data, cats = None, pconfig = None):
     """ Plot a horizontal bar graph. Expects a 2D dict of sample
     data. Also can take info about categories. There are quite a
     few variants of how to use this function, see the docs for details.
@@ -53,6 +54,11 @@ def plot (data, cats=None, pconfig=None):
 
     if pconfig is None:
         pconfig = {}
+
+    # Allow user to overwrite any given config for this plot
+    if 'id' in pconfig and pconfig['id'] and pconfig['id'] in config.custom_plot_config:
+        for k, v in config.custom_plot_config[pconfig['id']].items():
+            pconfig[k] = v
 
     # Validate config if linting
     if config.lint:
@@ -115,6 +121,13 @@ def plot (data, cats=None, pconfig=None):
                 if 'name' not in cat[c]:
                     cats[idx][c]['name'] = c
 
+    # Allow user to overwrite a given category config for this plot
+    if 'id' in pconfig and pconfig['id'] and pconfig['id'] in config.custom_plot_config:
+        for k, v in config.custom_plot_config[pconfig['id']].items():
+            if k in cats[idx].keys():
+                for kk, vv in v.items():
+                    cats[idx][k][kk] = vv
+
     # Parse the data into a chart friendly format
     plotsamples = list()
     plotdata = list()
@@ -167,8 +180,9 @@ def plot (data, cats=None, pconfig=None):
         if config.plots_force_flat or (not config.plots_force_interactive and len(plotsamples[0]) > config.plots_flat_numseries):
             try:
                 return matplotlib_bargraph(plotdata, plotsamples, pconfig)
-            except:
+            except Exception as e:
                 logger.error("############### Error making MatPlotLib figure! Falling back to HighCharts.")
+                logger.debug(e, exc_info=True)
                 return highcharts_bargraph(plotdata, plotsamples, pconfig)
         else:
             # Use MatPlotLib to generate static plots if requested

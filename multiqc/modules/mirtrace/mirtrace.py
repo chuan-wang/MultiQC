@@ -8,10 +8,6 @@ from collections import OrderedDict
 import logging
 
 import json
-import csv
-import random
-import string
-from multiqc import config
 from multiqc.plots import bargraph, linegraph
 from multiqc.modules.base_module import BaseMultiqcModule
 
@@ -23,11 +19,12 @@ class MultiqcModule(BaseMultiqcModule):
     def __init__(self):
 
         # Initialise the parent object
-        super(MultiqcModule, self).__init__(name='miRTrace',
-        anchor='mirtrace',
-        href='__TBD__',
-        info="is a quality control software for small RNA sequencing data. "\
-        "It is developed by the team of Marc Friedländer (KTH, Sweden).")
+        super(MultiqcModule, self).__init__(
+            name = 'miRTrace',
+            anchor = 'mirtrace',
+            href = 'https://github.com/friedlanderlab/mirtrace',
+            info = "is a quality control software for small RNA sequencing data developed by Friedländer lab (KTH, Sweden)."
+        )
 
         # Find and load miRTrace summary statistics table
         self.summary_data = dict()
@@ -147,10 +144,10 @@ class MultiqcModule(BaseMultiqcModule):
             else:
                 body[s[0]]=s[1:len(s)]
 
-        for record in header[1:len(header)]:
+        for record in header[0:len(header)]:
             s_name = self.clean_s_name(record, f['root'])
             parsed_data = {}
-            idx = header[1:len(header)].index(record)
+            idx = header[0:len(header)].index(record)
             for length in body:
                 parsed_data[length] = int(body[length][idx])
             if s_name in self.length_data:
@@ -174,10 +171,10 @@ class MultiqcModule(BaseMultiqcModule):
             else:
                 body[s[0]]=s[1:len(s)]
 
-        for record in header[1:len(header)]:
+        for record in header[0:len(header)]:
             s_name = self.clean_s_name(record, f['root'])
             parsed_data = {}
-            idx = header[1:len(header)].index(record)
+            idx = header[0:len(header)].index(record)
             for clade in body:
                 parsed_data[clade] = int(body[clade][idx])
             if s_name in self.contamination_data:
@@ -201,10 +198,10 @@ class MultiqcModule(BaseMultiqcModule):
             else:
                 body[s[0]]=s[1:len(s)]
 
-        for record in header[1:len(header)]:
+        for record in header[0:len(header)]:
             s_name = self.clean_s_name(record, f['root'])
             parsed_data = {}
-            idx = header[1:len(header)].index(record)
+            idx = header[0:len(header)].index(record)
             for depth in body:
                 parsed_data[depth] = int(body[depth][idx]) if body[depth][idx] else 0
             if s_name in self.complexity_data:

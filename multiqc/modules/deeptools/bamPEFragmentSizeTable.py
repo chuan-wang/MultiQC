@@ -3,10 +3,8 @@
 """ MultiQC submodule to parse output from deepTools bamPEFragmentSize for summary table """
 
 import logging
-import re
 from collections import OrderedDict
 
-from multiqc import config
 from multiqc.plots import table, linegraph
 
 # Initialise the logger
@@ -79,7 +77,7 @@ class bamPEFragmentSizeTableMixin():
             }
             config = {'namespace': 'deepTools bamPEFragmentSize'}
             self.add_section(
-                name = "Read lengths",
+                name = "Read length metrics",
                 anchor = "deeptools_readlengths",
                 plot = table.plot(self.deeptools_bamPEFragmentSize, headersSE, config)
             )
@@ -144,7 +142,7 @@ class bamPEFragmentSizeTableMixin():
                     PE = True
                     break
             if PE:
-                self.add_section(name="Fragment lengths",
+                self.add_section(name="Fragment length metrics",
                                  anchor="deeptools_fragmentlengths",
                                  plot=table.plot(self.deeptools_bamPEFragmentSize, headersPE, config))
 
@@ -163,7 +161,7 @@ class bamPEFragmentSizeTableMixin():
                     }
                 ],
                 'id': 'deeptools_readlengthsPlot',
-                'title': 'Read/Fragment length distribution',
+                'title': 'deepTools: Read/Fragment length distribution',
                 'namespace': 'deepTools bamPEFragmentSize',
                 'ylab': "Read length (bases)",
                 'xlab': "Percentile"
@@ -230,7 +228,7 @@ class bamPEFragmentSizeTableMixin():
                             continue
                         try:
                             # Most values are ac
-                            d[s_name][h] = int(cols[idx])
+                            d[s_name][h] = self._int(cols[idx])
                         except ValueError:
                             d[s_name][h] = float(cols[idx])
 

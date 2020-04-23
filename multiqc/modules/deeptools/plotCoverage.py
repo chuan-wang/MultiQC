@@ -3,10 +3,8 @@
 """ MultiQC submodule to parse output from deepTools plotCoverage """
 
 import logging
-import re
 from collections import OrderedDict
 
-from multiqc import config
 from multiqc.plots import table, linegraph
 
 # Initialise the logger
@@ -87,7 +85,7 @@ class plotCoverageMixin():
         if len(self.deeptools_plotCoverageOutRawCounts) > 0:
             config = {
                 'id': 'deeptools_coverage_metrics_plot',
-                'title': 'Coverage distribution',
+                'title': 'deepTools: Coverage distribution',
                 'xlab': 'Coverage',
                 'ylab': 'Fraction of bases sampled'
             }

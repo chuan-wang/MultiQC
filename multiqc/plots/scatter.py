@@ -5,7 +5,7 @@
 import logging
 import random
 
-from multiqc.utils import report
+from multiqc.utils import config, report
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +19,11 @@ def plot (data, pconfig=None):
     """
     if pconfig is None:
         pconfig = {}
+
+    # Allow user to overwrite any given config for this plot
+    if 'id' in pconfig and pconfig['id'] and pconfig['id'] in config.custom_plot_config:
+        for k, v in config.custom_plot_config[pconfig['id']].items():
+            pconfig[k] = v
 
     # Given one dataset - turn it into a list
     if type(data) is not list:
@@ -114,7 +119,11 @@ def highcharts_scatter_plot (plotdata, pconfig=None):
                 ymax = 'data-ymax="{}"'.format(pconfig['data_labels'][k]['ymax'])
             except:
                 ymax = ''
-            html += '<button class="btn btn-default btn-sm {a}" data-action="set_data" {y} {ym} data-newdata="{k}" data-target="{id}">{n}</button>\n'.format(a=active, id=pconfig['id'], n=name, y=ylab, ym=ymax, k=k)
+            try:
+                xlab = 'data-xlab="{}"'.format(pconfig['data_labels'][k]['xlab'])
+            except:
+                xlab = 'data-xlab="{}"'.format(name) if name != k+1 else ''
+            html += '<button class="btn btn-default btn-sm {a}" data-action="set_data" {y} {ym} {xl} data-newdata="{k}" data-target="{id}">{n}</button>\n'.format(a=active, id=pconfig['id'], n=name, y=ylab, ym=ymax, xl=xlab, k=k)
         html += '</div>\n\n'
 
     # The plot div

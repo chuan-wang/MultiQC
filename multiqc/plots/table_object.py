@@ -124,17 +124,27 @@ class datatable (object):
                 for ns in config.table_columns_visible.keys():
                     # Make namespace key case insensitive
                     if ns.lower() == headers[idx][k]['namespace'].lower():
-                        try:
-                            # Config has True = visibile, False = Hidden. Here we're setting "hidden" which is inverse
-                            headers[idx][k]['hidden'] = not config.table_columns_visible[ns][k]
-                        except KeyError:
-                            pass
+
+                        # First - if config value is a bool, set all module columns to that value
+                        if isinstance(config.table_columns_visible[ns], bool):
+                            headers[idx][k]['hidden'] = not config.table_columns_visible[ns]
+
+                        # Not a bool, assume a dict of the specific column IDs
+                        else:
+                            try:
+                                # Config has True = visibile, False = Hidden. Here we're setting "hidden" which is inverse
+                                headers[idx][k]['hidden'] = not config.table_columns_visible[ns][k]
+                            except KeyError:
+                                pass
 
                 # Also overwite placement if set in config
                 try:
                     headers[idx][k]['placement'] = float(config.table_columns_placement[ headers[idx][k]['namespace'] ][k])
                 except (KeyError, ValueError):
-                    pass
+                    try:
+                        headers[idx][k]['placement'] = float(config.table_columns_placement[ pconfig['id'] ][k])
+                    except (KeyError, ValueError):
+                        pass
 
                 # Work out max and min value if not given
                 setdmax = False

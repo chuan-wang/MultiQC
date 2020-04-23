@@ -6,7 +6,6 @@ from __future__ import print_function
 from collections import OrderedDict
 import logging
 
-from multiqc import config
 from multiqc.modules.base_module import BaseMultiqcModule
 
 # Import the Picard submodules
@@ -20,6 +19,7 @@ from . import OxoGMetrics
 from . import RnaSeqMetrics
 from . import RrbsSummaryMetrics
 from . import TargetedPcrMetrics
+from . import VariantCallingMetrics
 from . import ValidateSamFile
 from . import WgsMetrics
 
@@ -86,6 +86,10 @@ class MultiqcModule(BaseMultiqcModule):
         n['TargetedPcrMetrics'] = TargetedPcrMetrics.parse_reports(self)
         if n['TargetedPcrMetrics'] > 0:
             log.info("Found {} TargetedPcrMetrics reports".format(n['TargetedPcrMetrics']))
+
+        n['VariantCallingMetrics'] = VariantCallingMetrics.parse_reports(self)
+        if n['VariantCallingMetrics'] > 0:
+            log.info("Found {} VariantCallingMetrics reports".format(n['VariantCallingMetrics']))
 
         n['ValidateSamFile'] = ValidateSamFile.parse_reports(self)
         if n['ValidateSamFile'] > 0:

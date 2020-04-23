@@ -3,10 +3,7 @@
 """ MultiQC submodule to parse output from deepTools bamPEFragmentSize for read length distribution """
 
 import logging
-import re
-from collections import OrderedDict
 
-from multiqc import config
 from multiqc.plots import linegraph
 
 # Initialise the logger
@@ -38,7 +35,7 @@ class bamPEFragmentSizeDistributionMixin():
             }
 
             self.add_section (
-                name = 'Fragment Size Distribution',
+                name = 'Fragment size distribution',
                 anchor = 'fragment_size_distribution',
                 description="Distribution of paired-end fragment sizes",
                 plot=linegraph.plot(self.deeptools_bamPEFragmentSizeDistribution, config)
@@ -60,6 +57,6 @@ class bamPEFragmentSizeDistributionMixin():
                 if s_name != lastsample:
                     d[s_name] = dict()
                     lastsample = s_name
-                d[s_name].update({int(cols[0]):int(cols[1])})
+                d[s_name].update({self._int(cols[0]):self._int(cols[1])})
 
         return d

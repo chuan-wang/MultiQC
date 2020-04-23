@@ -22,6 +22,8 @@ def parse_reports(self):
     for f in self.find_log_files('qualimap/bamqc/genome_results'):
         parse_genome_results(self, f)
     self.qualimap_bamqc_genome_results = self.ignore_samples(self.qualimap_bamqc_genome_results)
+    if len(self.qualimap_bamqc_genome_results) > 0:
+        self.write_data_file(self.qualimap_bamqc_genome_results, 'multiqc_qualimap_bamqc_genome_results')
 
     # Coverage - coverage_histogram.txt
     self.qualimap_bamqc_coverage_hist = dict()
@@ -85,6 +87,7 @@ def parse_genome_results(self, f):
         'median_insert_size': r"median insert size = ([\d,\.]+)",
         'mean_mapping_quality': r"mean mapping quality = ([\d,\.]+)",
         'general_error_rate': r"general error rate = ([\d,\.]+)",
+        'mean_coverage': r"mean coverageData = ([\d,]+)"
     }
     d = dict()
     for k, r in regexes.items():
@@ -109,6 +112,7 @@ def parse_genome_results(self, f):
         d['percentage_aligned'] = (d['mapped_reads'] / d['total_reads'])*100
         self.general_stats_data[s_name]['percentage_aligned'] = d['percentage_aligned']
         self.general_stats_data[s_name]['general_error_rate'] = d['general_error_rate']*100
+        self.general_stats_data[s_name]['mean_coverage'] = d['mean_coverage']
     except KeyError:
         pass
 
@@ -141,14 +145,15 @@ def parse_coverage(self, f):
     # Find median without importing anything to do it for us
     num_counts = sum(d.values())
     cum_counts = 0
+    total_cov = 0
     median_coverage = None
     for thiscov, thiscount in d.items():
         cum_counts += thiscount
+        total_cov += thiscov*thiscount
         if cum_counts >= num_counts/2:
             median_coverage = thiscov
             break
     self.general_stats_data[s_name]['median_coverage'] = median_coverage
-
     # Save results
     if s_name in self.qualimap_bamqc_coverage_hist:
         log.debug("Duplicate coverage histogram sample name found! Overwriting: {}".format(s_name))
@@ -229,6 +234,71 @@ def parse_gc_dist(self, f):
     self.add_data_source(f, s_name=s_name, section='mapped_gc_distribution')
 
 
+coverage_histogram_helptext = '''
+For a set of DNA or RNA reads mapped to a reference sequence, such as a genome
+or transcriptome, the depth of coverage at a given base position is the number
+of high-quality reads that map to the reference at that position
+(<a href="https://doi.org/10.1038/nrg3642" target="_blank">Sims et al. 2014</a>).
+
+Bases of a reference sequence (y-axis) are groupped by their depth of coverage
+(*0&#215;, 1&#215;, &#8230;, N&#215;*) (x-axis). This plot shows
+the frequency of coverage depths relative to the reference sequence for each
+read dataset, which provides an indirect measure of the level and variation of
+coverage depth in the corresponding sequenced sample.
+
+If reads are randomly distributed across the reference sequence, this plot
+should resemble a Poisson distribution (<a href="https://doi.org/10.1016/0888-7543(88)90007-9"
+target="_blank">Lander & Waterman 1988</a>), with a peak indicating approximate
+depth of coverage, and more uniform coverage depth being reflected in a narrower
+spread. The optimal level of coverage depth depends on the aims of the
+experiment, though it should at minimum be sufficiently high to adequately
+address the biological question; greater uniformity of coverage is generally
+desirable, because it increases breadth of coverage for a given depth of
+coverage, allowing equivalent results to be achieved at a lower sequencing depth
+(<a href="https://doi.org/10.1002/gepi.20575" target="_blank">Sampson
+et al. 2011</a>; <a href="https://doi.org/10.1038/nrg3642" target="_blank">Sims
+et al. 2014</a>). However, it is difficult to achieve uniform coverage
+depth in practice, due to biases introduced during sample preparation
+(<a href="https://doi.org/10.1016/j.yexcr.2014.01.008" target="_blank">van
+Dijk et al. 2014</a>), sequencing (<a href="https://doi.org/10.1186/gb-2013-14-5-r51"
+target="_blank">Ross et al. 2013</a>) and read mapping
+(<a href="https://doi.org/10.1038/nrg3642" target="_blank">Sims et al. 2014</a>).
+
+This plot may include a small peak for regions of the reference sequence with
+zero depth of coverage. Such regions may be absent from the given sample (due
+to a deletion or structural rearrangement), present in the sample but not
+successfully sequenced (due to bias in sequencing or preparation), or sequenced
+but not successfully mapped to the reference (due to the choice of mapping
+algorithm, the presence of repeat sequences, or mismatches caused by variants
+or sequencing errors). Related factors cause most datasets to contain some
+unmapped reads (<a href="https://doi.org/10.1038/nrg3642" target="_blank">Sims
+et al. 2014</a>).'''
+
+genome_fraction_helptext = '''
+For a set of DNA or RNA reads mapped to a reference sequence, such as a genome
+or transcriptome, the depth of coverage at a given base position is the number
+of high-quality reads that map to the reference at that position, while the
+breadth of coverage is the fraction of the reference sequence to which reads
+have been mapped with at least a given depth of coverage
+(<a href="https://doi.org/10.1038/nrg3642" target="_blank">Sims et al. 2014</a>).
+
+Defining coverage breadth in terms of coverage depth is useful, because
+sequencing experiments typically require a specific minimum depth of coverage
+over the region of interest (<a href="https://doi.org/10.1038/nrg3642"
+target="_blank">Sims et al. 2014</a>), so the extent of the reference sequence
+that is amenable to analysis is constrained to lie within regions that have
+sufficient depth. With inadequate sequencing breadth, it can be difficult to
+distinguish the absence of a biological feature (such as a gene) from a lack
+of data (<a href="https://doi.org/10.1101/gr.7050807" target="_blank">Green 2007</a>).
+
+For increasing coverage depths (*1&#215;, 2&#215;, &#8230;, N&#215;*),
+coverage breadth is calculated as the percentage of the reference
+sequence that is covered by at least that number of reads, then plots
+coverage breadth (y-axis) against coverage depth (x-axis). This plot
+shows the relationship between sequencing depth and breadth for each read
+dataset, which can be used to gauge, for example, the likely effect of a
+minimum depth filter on the fraction of a genome available for analysis.'''
+
 def report_sections(self):
     """ Add results from Qualimap BamQC parsing to the report """
     # Append to self.sections list
@@ -266,46 +336,6 @@ def report_sections(self):
                     self.general_stats_data[s_name]['{}_x_pc'.format(c)] = 0
 
         # Section 1 - BamQC Coverage Histogram
-        coverage_histogram_helptext = '''
-        For a set of DNA or RNA reads mapped to a reference sequence, such as a genome
-        or transcriptome, the depth of coverage at a given base position is the number
-        of high-quality reads that map to the reference at that position
-        (<a href="https://doi.org/10.1038/nrg3642" target="_blank">Sims et al. 2014</a>).
-
-        QualiMap groups the bases of a reference sequence by their depth of coverage
-        (*0&#215;, 1&#215;, &#8230;, N&#215;*), then plots the number of bases of the
-        reference (y-axis) at each level of coverage depth (x-axis). This plot shows
-        the frequency of coverage depths relative to the reference sequence for each
-        read dataset, which provides an indirect measure of the level and variation of
-        coverage depth in the corresponding sequenced sample.
-
-        If reads are randomly distributed across the reference sequence, this plot
-        should resemble a Poisson distribution (<a href="https://doi.org/10.1016/0888-7543(88)90007-9"
-        target="_blank">Lander & Waterman 1988</a>), with a peak indicating approximate
-        depth of coverage, and more uniform coverage depth being reflected in a narrower
-        spread. The optimal level of coverage depth depends on the aims of the
-        experiment, though it should at minimum be sufficiently high to adequately
-        address the biological question; greater uniformity of coverage is generally
-        desirable, because it increases breadth of coverage for a given depth of
-        coverage, allowing equivalent results to be achieved at a lower sequencing depth
-        (<a href="https://doi.org/10.1002/gepi.20575" target="_blank">Sampson
-        et al. 2011</a>; <a href="https://doi.org/10.1038/nrg3642" target="_blank">Sims
-        et al. 2014</a>). However, it is difficult to achieve uniform coverage
-        depth in practice, due to biases introduced during sample preparation
-        (<a href="https://doi.org/10.1016/j.yexcr.2014.01.008" target="_blank">van
-        Dijk et al. 2014</a>), sequencing (<a href="https://doi.org/10.1186/gb-2013-14-5-r51"
-        target="_blank">Ross et al. 2013</a>) and read mapping
-        (<a href="https://doi.org/10.1038/nrg3642" target="_blank">Sims et al. 2014</a>).
-
-        This plot may include a small peak for regions of the reference sequence with
-        zero depth of coverage. Such regions may be absent from the given sample (due
-        to a deletion or structural rearrangement), present in the sample but not
-        successfully sequenced (due to bias in sequencing or preparation), or sequenced
-        but not successfully mapped to the reference (due to the choice of mapping
-        algorithm, the presence of repeat sequences, or mismatches caused by variants
-        or sequencing errors). Related factors cause most datasets to contain some
-        unmapped reads (<a href="https://doi.org/10.1038/nrg3642" target="_blank">Sims
-        et al. 2014</a>).'''
         self.add_section (
             name = 'Coverage histogram',
             anchor = 'qualimap-coverage-histogram',
@@ -324,30 +354,6 @@ def report_sections(self):
             })
         )
         # Section 2 - BamQC cumulative coverage genome fraction
-        genome_fraction_helptext = '''
-        For a set of DNA or RNA reads mapped to a reference sequence, such as a genome
-        or transcriptome, the depth of coverage at a given base position is the number
-        of high-quality reads that map to the reference at that position, while the
-        breadth of coverage is the fraction of the reference sequence to which reads
-        have been mapped with at least a given depth of coverage
-        (<a href="https://doi.org/10.1038/nrg3642" target="_blank">Sims et al. 2014</a>).
-
-        Defining coverage breadth in terms of coverage depth is useful, because
-        sequencing experiments typically require a specific minimum depth of coverage
-        over the region of interest (<a href="https://doi.org/10.1038/nrg3642"
-        target="_blank">Sims et al. 2014</a>), so the extent of the reference sequence
-        that is amenable to analysis is constrained to lie within regions that have
-        sufficient depth. With inadequate sequencing breadth, it can be difficult to
-        distinguish the absence of a biological feature (such as a gene) from a lack
-        of data (<a href="https://doi.org/10.1101/gr.7050807" target="_blank">Green 2007</a>).
-
-        For increasing coverage depths (*1&#215;, 2&#215;, &#8230;, N&#215;*),
-        QualiMap calculates coverage breadth as the percentage of the reference
-        sequence that is covered by at least that number of reads, then plots
-        coverage breadth (y-axis) against coverage depth (x-axis). This plot
-        shows the relationship between sequencing depth and breadth for each read
-        dataset, which can be used to gauge, for example, the likely effect of a
-        minimum depth filter on the fraction of a genome available for analysis.'''
         self.add_section (
             name = 'Cumulative genome coverage',
             anchor = 'qualimap-cumulative-genome-fraction-coverage',
@@ -520,8 +526,15 @@ def general_stats_headers (self):
             'hidden': c in hidecovs
         }
     self.general_stats_headers['median_coverage'] = {
-        'title': 'Coverage',
+        'title': 'Median cov',
         'description': 'Median coverage',
+        'min': 0,
+        'suffix': 'X',
+        'scale': 'BuPu'
+    }
+    self.general_stats_headers['mean_coverage'] = {
+        'title': 'Mean cov',
+        'description': 'Mean coverage',
         'min': 0,
         'suffix': 'X',
         'scale': 'BuPu'

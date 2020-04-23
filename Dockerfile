@@ -1,19 +1,19 @@
-FROM python:2.7-slim
+# Teeny-tiny matplotlib image based on alpine
+FROM czentye/matplotlib-minimal:3.1.2
 
-LABEL \
-  author="Phil Ewels" \
-  description="MultiQC" \
-  maintainer="phil.ewels@scilifelab.se"
+LABEL author="Phil Ewels" \
+      description="MultiQC" \
+      maintainer="phil.ewels@scilifelab.se"
 
-# Install libraries
-RUN \
-  apt-get update && apt-get install -y --no-install-recommends \
-  g++ \
-  git \
-  wget \
-  && wget --quiet -O /opt/get-pip.py https://bootstrap.pypa.io/get-pip.py \
-  && python /opt/get-pip.py \
-  && rm -rf /var/lib/apt/lists/* /opt/get-pip.py
+RUN apk add --no-cache bash
+
+# Add the MultiQC source files to the container
+ADD . /usr/src/multiqc
+WORKDIR /usr/src/multiqc
 
 # Install MultiQC
-RUN pip install git+git://github.com/ewels/MultiQC.git
+RUN python -m pip install .
+
+# Set up entrypoint and cmd for easy docker usage
+ENTRYPOINT [ "multiqc" ]
+CMD [ "." ]
